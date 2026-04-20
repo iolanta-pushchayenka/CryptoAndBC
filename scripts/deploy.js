@@ -1,24 +1,22 @@
-
-const hre = require("hardhat");
+const { ethers } = require("hardhat");
 
 async function main() {
-  const [deployer] = await hre.ethers.getSigners();
-  console.log("Deploying contracts with account:", deployer.address);
+    const [deployer] = await ethers.getSigners();
 
-  const Lock = await hre.ethers.getContractFactory("Lock");
+    console.log("Деплой с аккаунта:", deployer.address);
 
-  const unlockTime = Math.floor(Date.now() / 1000) + 60;
+    const MyToken = await ethers.getContractFactory("MyToken");
 
-  const lock = await Lock.deploy(unlockTime, { value: hre.ethers.parseEther("0.01") });
+    const myToken = await MyToken.deploy(
+        ethers.parseEther("1000000") 
+    );
 
-  await lock.waitForDeployment();
+    await myToken.waitForDeployment();
 
-  console.log("Lock deployed to:", await lock.getAddress());
+    console.log("Контракт задеплоен:", await myToken.getAddress());
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
+main().catch((error) => {
     console.error(error);
-    process.exit(1);
-  });
+    process.exitCode = 1;
+});
